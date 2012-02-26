@@ -1,0 +1,8 @@
+<!DOCTYPE kpartgui>
+<gui name="katequickopen" library="katequickopenplugin" version="1">
+<MenuBar>
+        <Menu name="file"><text>&amp;File</text>
+            <Action name="file_quick_open" group="open_merge"/>
+        </Menu>
+</MenuBar>
+</gui>
