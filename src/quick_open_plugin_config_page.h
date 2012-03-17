@@ -56,7 +56,13 @@ public:
     void defaults();
     //@}
 
+private Q_SLOTS:
+    void addDir();
+    void delDir();
+
 private:
+    bool contains(const QString&);
+
     QuickOpenPlugin* const m_plugin;
     Ui_PathListConfigWidget* const m_quick_path_list;
 };

@@ -25,6 +25,7 @@
 
 // Standard includes
 #include <KDebug>
+#include <KDirSelectDialog>
 #include <KTabWidget>
 
 namespace kate {
@@ -51,18 +52,9 @@ QuickOpenPluginConfigPage::QuickOpenPluginConfigPage(
     QWidget* pss_tab = new QWidget(tab);
     tab->addTab(pss_tab, i18n("Other Settings"));
 
-#if 0
     // Connect add/del buttons to actions
-    connect(m_system_list->addButton, SIGNAL(clicked()), this, SLOT(addGlobalIncludeDir()));
-    connect(m_system_list->delButton, SIGNAL(clicked()), this, SLOT(delGlobalIncludeDir()));
-    connect(m_system_list->moveUpButton, SIGNAL(clicked()), this, SLOT(moveGlobalDirUp()));
-    connect(m_system_list->moveDownButton, SIGNAL(clicked()), this, SLOT(moveGlobalDirDown()));
-
-    connect(m_session_list->addButton, SIGNAL(clicked()), this, SLOT(addSessionIncludeDir()));
-    connect(m_session_list->delButton, SIGNAL(clicked()), this, SLOT(delSessionIncludeDir()));
-    connect(m_session_list->moveUpButton, SIGNAL(clicked()), this, SLOT(moveSessionDirUp()));
-    connect(m_session_list->moveDownButton, SIGNAL(clicked()), this, SLOT(moveSessionDirDown()));
-#endif
+    connect(m_quick_path_list->addButton, SIGNAL(clicked()), this, SLOT(addDir()));
+    connect(m_quick_path_list->delButton, SIGNAL(clicked()), this, SLOT(delDir()));
 
     // Populate configuration w/ dirs
     reset();
@@ -80,5 +72,32 @@ void QuickOpenPluginConfigPage::defaults()
 {
     kDebug() << "Default configuration requested";
 }
+
+void QuickOpenPluginConfigPage::addDir()
+{
+    KUrl dir_uri = KDirSelectDialog::selectDirectory(KUrl(), true, this);
+    if (dir_uri != KUrl())
+    {
+        const QString& dir_str = dir_uri.toLocalFile();
+        if (!contains(dir_str))
+            new QListWidgetItem(dir_str, m_quick_path_list->pathsList);
+    }
+}
+
+void QuickOpenPluginConfigPage::delDir()
+{
+    m_quick_path_list->pathsList->removeItemWidget(
+        m_quick_path_list->pathsList->currentItem()
+      );
+}
+
+bool QuickOpenPluginConfigPage::contains(const QString& dir)
+{
+    for (int i = 0; i < m_quick_path_list->pathsList->count(); ++i)
+        if (m_quick_path_list->pathsList->item(i)->text() == dir)
+            return true;
+    return false;
+}
+
 //END QuickOpenPluginConfigPage
 }                                                           // namespace kate
