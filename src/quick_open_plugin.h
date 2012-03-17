@@ -51,7 +51,7 @@ public:
     /// Destructor
     virtual ~QuickOpenPlugin();
     /// Create a new view of this plugin for the given main window
-    Kate::PluginView *createView(Kate::MainWindow*);
+    Kate::PluginView* createView(Kate::MainWindow*);
     /// \name Plugin interface implementation
     //@{
     void readSessionConfig(KConfigBase*, const QString&);
