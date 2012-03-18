@@ -44,7 +44,8 @@ test "$result" = "0" || exit 1
 
 if [ "@PROJECT_BINARY_DIR@" != "@PROJECT_SOURCE_DIR@" ]; then
     # Move generated files from PROJECT_BINARY_DIR to desired subdir (if exists)
-    dst=`test -d "@PROJECT_SOURCE_DIR@/$subdir" && echo "@PROJECT_SOURCE_DIR@/$subdir" || echo "@PROJECT_SOURCE_DIR@"`
+    dst=`test -d "@PROJECT_SOURCE_DIR@/$subdir" && echo "@PROJECT_SOURCE_DIR@/$subdir" \
+      || echo "@PROJECT_SOURCE_DIR@"`
     ebegin "Move $transformed_name""_tester.cpp to $dst"
     mv -i "@PROJECT_BINARY_DIR@/${transformed_name}_tester.cpp" $dst
     eend $?
@@ -61,6 +62,7 @@ if [ ! -f "@PROJECT_SOURCE_DIR@/$subdir/CMakeLists.txt" ]; then
   ebegin "Making @PROJECT_SOURCE_DIR@/$subdir/CMakeLists.txt..."
   sed "s,FIRST_SOURCE_FILE,${transformed_name}_tester.cpp," "@PROJECT_SOURCE_DIR@/cmake/support/TestCMakeLists.txt.in" \
     > "@PROJECT_SOURCE_DIR@/$subdir/CMakeLists.txt"
+  sed -i 's,// #define BOOST_AUTO_TEST_MAIN,#define BOOST_AUTO_TEST_MAIN,' $dst/${transformed_name}_tester.cpp
   eend $?
 else
   ewarn "Do not forget to update @PROJECT_SOURCE_DIR@/$subdir/CMakeLists.txt!"
