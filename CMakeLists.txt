@@ -46,6 +46,7 @@ include_directories(${KDE4_INCLUDES} ${QT_INCLUDES} ${Boost_INCLUDE_DIRS})
 #add_definitions(-DBOOST_RESULT_OF_USE_DECLTYPE)
 # Add Qt/KDE defines
 add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS})
+remove_definitions(-DQT_NO_STL)
 # Use Kate plugins debug area as default
 # add_definitions(-DDEBUG_AREA=13040)
 

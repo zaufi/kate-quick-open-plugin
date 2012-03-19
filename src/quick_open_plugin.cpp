@@ -53,6 +53,7 @@ QuickOpenPlugin::QuickOpenPlugin(
   , const QList<QVariant>&
   )
   : Kate::Plugin(static_cast<Kate::Application*>(application), "kate_quickopen_plugin")
+  , m_config_dirty(false)
 {
 }
 
@@ -77,10 +78,24 @@ Kate::PluginConfigPage* QuickOpenPlugin::configPage(uint number, QWidget* parent
 void QuickOpenPlugin::readSessionConfig(KConfigBase* config, const QString& groupPrefix)
 {
     kDebug() << "Reading session config: " << groupPrefix;
+    // Read session config
+    KConfigGroup scg(config, groupPrefix + ":quick-open");
+    QStringList dirs = scg.readPathEntry("ConfiguredDirs", QStringList());
+    kDebug() << "Got per session dirs list: " << dirs;
+    // Assign configuration
+    m_dirs = dirs;
+    m_config_dirty = false;
 }
+
 void QuickOpenPlugin::writeSessionConfig(KConfigBase* config, const QString& groupPrefix)
 {
+    if (!m_config_dirty)
+        return;
     kDebug() << "Writing session config: " << groupPrefix;
+    KConfigGroup scg(config, groupPrefix + ":quick-open");
+    scg.writePathEntry("ConfiguredDirs", m_dirs);
+    scg.sync();
+    m_config_dirty = false;
 }
 //END QuickOpenPlugin
 }                                                           // namespace kate

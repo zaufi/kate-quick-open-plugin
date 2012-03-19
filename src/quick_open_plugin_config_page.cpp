@@ -22,6 +22,7 @@
 
 // Project specific includes
 #include <src/quick_open_plugin_config_page.h>
+#include <src/quick_open_plugin.h>
 
 // Standard includes
 #include <KDebug>
@@ -63,11 +64,21 @@ QuickOpenPluginConfigPage::QuickOpenPluginConfigPage(
 void QuickOpenPluginConfigPage::reset()
 {
     kDebug() << "Reseting configuration";
+    m_quick_path_list->pathsList->addItems(m_plugin->sessionDirs());
 }
+
 void QuickOpenPluginConfigPage::apply()
 {
     kDebug() << "Applying configuration";
+    // Notify about configuration changes
+    QStringList dirs;
+    for (int i = 0; i < m_quick_path_list->pathsList->count(); ++i)
+    {
+        dirs.append(m_quick_path_list->pathsList->item(i)->text());
+    }
+    m_plugin->setSessionDirs(dirs);
 }
+
 void QuickOpenPluginConfigPage::defaults()
 {
     kDebug() << "Default configuration requested";

@@ -1,4 +1,5 @@
 set(KATE_QUICK_OPEN_PLUGIN_SOURCES
+    files_index.cpp
     quick_open_plugin_config_page.cpp
     quick_open_plugin_view.cpp
     quick_open_plugin.cpp
@@ -19,6 +20,6 @@ install(TARGETS katequickopenplugin DESTINATION ${PLUGIN_INSTALL_DIR})
 install(FILES ui.rc DESTINATION ${DATA_INSTALL_DIR}/katequickopenplugin)
 install(FILES katequickopenplugin.desktop DESTINATION ${SERVICES_INSTALL_DIR})
 
-# if (BUILD_TESTING)
-#     add_subdirectory(test)
-# endif()
+if (BUILD_TESTING)
+    add_subdirectory(test)
+endif()

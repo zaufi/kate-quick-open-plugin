@@ -24,9 +24,11 @@
 #  define __SRC__QUICK_OPEN_PLUGIN_VIEW_H__
 
 // Project specific includes
+# include <src/files_index.h>
 
 // Standard includes
 #  include <kate/plugin.h>
+#  include <ktexteditor/commandinterface.h>
 #  include <KTextEditor/View>
 #  include <KAction>
 
@@ -42,6 +44,7 @@ class QuickOpenPlugin;                                      // forward declarati
 class QuickOpenPluginView
   : public Kate::PluginView
   , public Kate::XMLGUIClient
+  , public KTextEditor::Command
 {
     Q_OBJECT
 
@@ -57,12 +60,22 @@ public:
     void writeSessionConfig(KConfigBase*, const QString&);
     //@}
 
+    /// \name Command interface implementation
+    //@{
+    const QStringList& cmds();
+    bool exec(KTextEditor::View*, const QString&, QString&);
+    bool help(KTextEditor::View*, const QString&, QString&);
+    //@}
+
 private Q_SLOTS:
-    void quickOpen();
+    void quickOpenDialog();
+    void quickOpen(const QString&);
+    void updateIndex();
 
 private:
     QuickOpenPlugin* m_plugin;
     KAction* m_quick_open;                                  ///< <em>Quick Open</em> action
+    FilesIndex m_indexer;
 };
 
 }                                                           // namespace kate

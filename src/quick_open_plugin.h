@@ -59,6 +59,8 @@ public:
     //@}
     /// Create a config page w/ given number and parent
     Kate::PluginConfigPage* configPage(uint = 0, QWidget* = 0, const char* = 0);
+
+    /// \name PluginConfigPageInterface implementation
     /// Get number of configuration pages for this plugin
     uint configPages() const
     {
@@ -83,6 +85,33 @@ public:
         assert("This plugin have the only configuration page" && number == 0);
         return KIcon("quickopen-file");
     }
+    //@}
+    /// \name Accessors
+    //@{
+    const QStringList& sessionDirs() const
+    {
+        return m_dirs;
+    }
+    //@}
+    /// \name Modifiers
+    //@{
+    void setSessionDirs(QStringList& dirs)
+    {
+        if (m_dirs != dirs)
+        {
+            m_dirs.swap(dirs);
+            m_config_dirty = true;
+            Q_EMIT(sessionDirsChanged());
+        }
+    }
+    //@}
+
+Q_SIGNALS:
+    void sessionDirsChanged();
+
+private:
+    QStringList m_dirs;                                     ///< List of configured lookup directories
+    bool m_config_dirty;
 };
 
 }                                                           // namespace kate
