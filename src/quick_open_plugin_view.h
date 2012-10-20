@@ -38,13 +38,15 @@ class QuickOpenPlugin;                                      // forward declarati
 /**
  * \brief [Type brief class description here]
  *
- * [More detailed description here]
+ * \todo It seems better to move \c m_indexer to plugin class
+ * to avoid its duplication when new view created.
  *
  */
 class QuickOpenPluginView
   : public Kate::PluginView
   , public Kate::XMLGUIClient
   , public KTextEditor::Command
+  , public KTextEditor::CommandExtension
 {
     Q_OBJECT
 
@@ -65,6 +67,14 @@ public:
     const QStringList& cmds();
     bool exec(KTextEditor::View*, const QString&, QString&);
     bool help(KTextEditor::View*, const QString&, QString&);
+    //@}
+
+    /// \name CommandExtension interface implementation
+    //@{
+    KCompletion* completionObject(KTextEditor::View*, const QString&);
+    void flagCompletions(QStringList&);
+    void processText(KTextEditor::View*, const QString&);
+    bool wantsToProcessText(const QString&);
     //@}
 
 private Q_SLOTS:

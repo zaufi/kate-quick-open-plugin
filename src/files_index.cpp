@@ -38,9 +38,10 @@ void FilesIndex::rebuildIndex(const QStringList& dirs)
 
 void FilesIndex::addDirToIndex(const QString& dir)
 {
-    QFileInfo start_dir = dir;
+    kDebug() << "Populate index w/ files from: " << dir;
+    /// \todo Check that \c dir is really a directory
     for (
-        QDirIterator it("/usr/include", QDirIterator::Subdirectories | QDirIterator::FollowSymlinks)
+        QDirIterator it(dir, QDirIterator::Subdirectories | QDirIterator::FollowSymlinks)
       ; it.hasNext()
       ; it.next()
       )
@@ -59,6 +60,8 @@ void FilesIndex::addDirToIndex(const QString& dir)
 
 QStringList FilesIndex::getCandidates(const QString& text) const
 {
+    kDebug() << "Trying to match text: " << text;
+
     QStringList result;
     for (
         index_type::const_iterator it = m_index.begin()
@@ -73,6 +76,19 @@ QStringList FilesIndex::getCandidates(const QString& text) const
                 result.push_back(*fit);
         }
     }
+    return result;
+}
+
+QStringList FilesIndex::getCompletionsList() const
+{
+    QStringList result;
+    for (
+        index_type::const_iterator it = m_index.begin()
+      , last = m_index.end()
+      ; it != last
+      ; result.push_back(it++.key())
+      )
+    {}
     return result;
 }
 

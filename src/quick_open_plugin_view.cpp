@@ -30,9 +30,34 @@
 #include <kate/mainwindow.h>
 #include <KActionCollection>
 #include <KLocalizedString>                                 /// \todo Where is \c i18n() defiend?
+#include <KCompletion>
 #include <cassert>
 
-namespace kate {
+namespace kate { namespace {
+/**
+ * \brief Class \c FuzzyCompletion
+ *
+ * Do fuzzy completion
+ */
+class FuzzyCompletion : public KCompletion
+{
+public:
+    /// Default constructor
+    explicit FuzzyCompletion(const FilesIndex& idx)
+      : m_indexer(idx)
+    {
+    }
+    QString makeCompletion(const QString& str)
+    {
+        kDebug() << "FC: make completion for " <<  str;
+        return QString();
+    }
+
+private:
+    const FilesIndex& m_indexer;
+};
+}                                                           // anonymous namespace
+
 //BEGIN QuickOpenPluginView
 QuickOpenPluginView::QuickOpenPluginView(Kate::MainWindow* mw, const KComponentData& data, QuickOpenPlugin* plugin)
   : Kate::PluginView(mw)
@@ -50,7 +75,7 @@ QuickOpenPluginView::QuickOpenPluginView(Kate::MainWindow* mw, const KComponentD
     // Subscribe to configuration changes
     connect(
         m_plugin
-      , SIGNAL(sessionDirsChanged(const QStringList&))
+      , SIGNAL(sessionDirsChanged())
       , this
       , SLOT(updateIndex())
       );
@@ -103,13 +128,14 @@ const QStringList& QuickOpenPluginView::cmds()
 
 bool QuickOpenPluginView::exec(KTextEditor::View*, const QString& cmd, QString& msg)
 {
-    Q_UNUSED(cmd);
     kDebug() << "Execute quick open command: " << cmd;
     assert("Sanity check" && cmd.startsWith("qo "));
     QString file = cmd.section(' ', 1);
+    kDebug() << "qo: got supposed filename: " << file;
 
+#if 0
     bool file_really_exists = false;
-    if (file[0] != '/')                                     // does it looks like absolute path?
+    if (file[0] != '/')                                     // does it looks like an absolute path?
     {
         // No, lets guess what to open...
         // 0) try to merge `file' w/ configured dirs first
@@ -161,12 +187,13 @@ bool QuickOpenPluginView::exec(KTextEditor::View*, const QString& cmd, QString& 
             }
         }
     }
+#endif
 
-    // Ok, we;ve got a filename in a `file' variable...
+    // Ok, we've got a filename in a `file' variable...
     // Lets try to open it!
     bool result = true;
     QFileInfo fi(file);
-    if (file_really_exists || fi.isReadable())
+    if (/*file_really_exists || */fi.isReadable())
     {
         mainWindow()->openUrl(file);
         msg = i18n("open file: ") + file;
@@ -194,6 +221,37 @@ bool QuickOpenPluginView::help(KTextEditor::View*, const QString& cmd, QString& 
 void QuickOpenPluginView::updateIndex()
 {
     m_indexer.rebuildIndex(m_plugin->sessionDirs());
+}
+
+KCompletion* QuickOpenPluginView::completionObject(KTextEditor::View*, const QString& cmd)
+{
+    kDebug() << "completionObject text: " << cmd;
+    assert("Sanity check" && cmd.startsWith("qo"));
+    return new FuzzyCompletion(m_indexer);
+}
+
+/**
+ * \todo Nowadays Kate actually has no implementation for this feature :-(
+ */
+void QuickOpenPluginView::flagCompletions(QStringList& list)
+{
+    kDebug() << "flagCompletions" << list;
+    list << "f use fuzzy search";
+}
+
+void QuickOpenPluginView::processText(KTextEditor::View*, const QString& text)
+{
+    kDebug() << "Process text: " << text;
+}
+
+bool QuickOpenPluginView::wantsToProcessText(const QString& cmd)
+{
+#if 0
+    bool result = cmd.startsWith("qo");
+    kDebug() << "wantsToProcessText text: " << cmd << " -- " << result;
+    return result;
+#endif
+    return false;
 }
 
 //END QuickOpenPluginView

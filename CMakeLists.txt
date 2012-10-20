@@ -56,7 +56,7 @@ remove_definitions(-DQT_NO_STL)
 #set(CMAKE_EXE_LINKER_FLAGS "-Wl,--as-needed ${CMAKE_EXE_LINKER_FLAGS}")
 #set(CMAKE_MODULE_LINKER_FLAGS "-Wl,--as-needed ${CMAKE_MODULE_LINKER_FLAGS}")
 # Set generic compiler flags
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pipe ${KDE4_ENABLE_EXCEPTIONS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${KDE4_ENABLE_EXCEPTIONS}")
 
 # Setup compiler options depending on build type
 #message(STATUS "Setting options for ${CMAKE_BUILD_TYPE} build type")

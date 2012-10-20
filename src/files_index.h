@@ -49,6 +49,8 @@ public:
     /// Get candidates by string
     QStringList getCandidates(const QString&) const;
 
+    QStringList getCompletionsList() const;
+
     /// (Re)build index of files using givel directories list
     void rebuildIndex(const QStringList&);
 
